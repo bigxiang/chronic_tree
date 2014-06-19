@@ -2,6 +2,8 @@
 
 Build a tree model with versions. You can retrieve the tree at any time.
 
+**DEVELOPING**
+
 ## Installation
 
 Add this line to your application's Gemfile:
