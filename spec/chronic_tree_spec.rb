@@ -135,9 +135,18 @@ describe ChronicTree do
           expect(@root_org.children.size).to be == 2
         end
 
-        it "s: replace self by another object" do
+        it "s: replace root by another object" do
+          @root_org.replace_by(@new_org)
+          expect(@root_org.existed?).to be_falsy
+          expect(@lv1_child_org.parent.id).to be == @new_org.id
+          expect(@new_org.parent?).to be_falsy
+          expect(@new_org.children.size).to be == 1
+          expect(@new_org.descendants.size).to be == 2
+        end
+
+        it "s: replace non-root by another object" do
           @lv1_child_org.replace_by(@new_org)
-          expect(@lv1_child_org.children.size).to be == 1
+          expect(@lv1_child_org.existed?).to be_falsy
           expect(@lv2_child_org.parent.id).to be == @new_org.id
           expect(@new_org.parent.id).to be == @root_org.id
           expect(@root_org.children.size).to be == 1
@@ -148,6 +157,8 @@ describe ChronicTree do
           expect { @lv1_child_org.change_parent(Org.new) }.to raise_error
           expect { @lv1_child_org.change_parent(Struct.new) }.to raise_error
           expect { @lv1_child_org.change_parent(@new_org) }.to raise_error
+          expect { @lv1_child_org.change_parent(@lv2_child_org) }.to raise_error
+          expect { @lv1_child_org.change_parent(@lv1_child_org) }.to raise_error
         end
 
         it "f: replace self by another object" do
