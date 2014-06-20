@@ -2,6 +2,8 @@
 
 Build a tree model with versions. You can retrieve the tree at any time.
 
+[![Build Status](https://travis-ci.org/bigxiang/chronic_tree.svg?branch=master)](https://travis-ci.org/bigxiang/chronic_tree)
+
 **DEVELOPING**
 
 ## Installation
