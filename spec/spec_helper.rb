@@ -39,12 +39,37 @@ class Org < ActiveRecord::Base
   include ChronicTree
 
   chronic_tree
+  chronic_tree('special')
 end
 
+# Provide a tree with the hierarchy below:
+#   root
+#     -- lv1
+#       -- lv2
+#         -- lv3
+#           -- lv4
+#             -- lv5
+#       -- lv2-2
+#         -- lv3-2
+#           -- lv4-2
+#             -- lv5-2
+#     -- lv1-2
+#       -- lv2-3
+#       -- lv2-4
 def init_simple_tree
   @root_org = Org.create(name: 'root')
   @lv1_child_org = Org.create(name: 'lv1')
+  @lv1_child_org2 = Org.create(name: 'lv1-2')
   @lv2_child_org = Org.create(name: 'lv2')
+  @lv2_child_org2 = Org.create(name: 'lv2-2')
+  @lv2_child_org3 = Org.create(name: 'lv2-3')
+  @lv2_child_org4 = Org.create(name: 'lv2-4')
+  @lv3_child_org = Org.create(name: 'lv3')
+  @lv3_child_org2 = Org.create(name: 'lv3-2')
+  @lv4_child_org = Org.create(name: 'lv4')
+  @lv4_child_org2 = Org.create(name: 'lv4-2')
+  @lv5_child_org = Org.create(name: 'lv5')
+  @lv5_child_org2 = Org.create(name: 'lv5-2')
 
   @root_org.elements_under_default_root.create(
     parent_id: @root_org.id,
@@ -66,6 +91,15 @@ def init_simple_tree
 
   @root_org.elements_under_default_root.create(
     parent_id: @root_org.id,
+    child_id: @lv1_child_org2.id,
+    distance: 1,
+    start_time: Time.now,
+    end_time: 1000.years.from_now,
+    scope_name: 'default'
+  )
+
+  @root_org.elements_under_default_root.create(
+    parent_id: @root_org.id,
     child_id: @lv2_child_org.id,
     distance: 2,
     start_time: Time.now,
@@ -76,6 +110,276 @@ def init_simple_tree
   @root_org.elements_under_default_root.create(
     parent_id: @lv1_child_org.id,
     child_id: @lv2_child_org.id,
+    distance: 1,
+    start_time: Time.now,
+    end_time: 1000.years.from_now,
+    scope_name: 'default'
+  )
+
+  @root_org.elements_under_default_root.create(
+    parent_id: @root_org.id,
+    child_id: @lv2_child_org2.id,
+    distance: 2,
+    start_time: Time.now,
+    end_time: 1000.years.from_now,
+    scope_name: 'default'
+  )
+
+  @root_org.elements_under_default_root.create(
+    parent_id: @lv1_child_org.id,
+    child_id: @lv2_child_org2.id,
+    distance: 1,
+    start_time: Time.now,
+    end_time: 1000.years.from_now,
+    scope_name: 'default'
+  )
+
+  @root_org.elements_under_default_root.create(
+    parent_id: @root_org.id,
+    child_id: @lv2_child_org3.id,
+    distance: 2,
+    start_time: Time.now,
+    end_time: 1000.years.from_now,
+    scope_name: 'default'
+  )
+
+  @root_org.elements_under_default_root.create(
+    parent_id: @lv1_child_org2.id,
+    child_id: @lv2_child_org3.id,
+    distance: 1,
+    start_time: Time.now,
+    end_time: 1000.years.from_now,
+    scope_name: 'default'
+  )
+
+  @root_org.elements_under_default_root.create(
+    parent_id: @root_org.id,
+    child_id: @lv2_child_org4.id,
+    distance: 2,
+    start_time: Time.now,
+    end_time: 1000.years.from_now,
+    scope_name: 'default'
+  )
+
+  @root_org.elements_under_default_root.create(
+    parent_id: @lv1_child_org2.id,
+    child_id: @lv2_child_org4.id,
+    distance: 1,
+    start_time: Time.now,
+    end_time: 1000.years.from_now,
+    scope_name: 'default'
+  )
+
+  @root_org.elements_under_default_root.create(
+    parent_id: @root_org.id,
+    child_id: @lv3_child_org.id,
+    distance: 3,
+    start_time: Time.now,
+    end_time: 1000.years.from_now,
+    scope_name: 'default'
+  )
+
+  @root_org.elements_under_default_root.create(
+    parent_id: @lv1_child_org.id,
+    child_id: @lv3_child_org.id,
+    distance: 2,
+    start_time: Time.now,
+    end_time: 1000.years.from_now,
+    scope_name: 'default'
+  )
+
+  @root_org.elements_under_default_root.create(
+    parent_id: @lv2_child_org.id,
+    child_id: @lv3_child_org.id,
+    distance: 1,
+    start_time: Time.now,
+    end_time: 1000.years.from_now,
+    scope_name: 'default'
+  )
+
+  @root_org.elements_under_default_root.create(
+    parent_id: @root_org.id,
+    child_id: @lv4_child_org.id,
+    distance: 4,
+    start_time: Time.now,
+    end_time: 1000.years.from_now,
+    scope_name: 'default'
+  )
+
+  @root_org.elements_under_default_root.create(
+    parent_id: @lv1_child_org.id,
+    child_id: @lv4_child_org.id,
+    distance: 3,
+    start_time: Time.now,
+    end_time: 1000.years.from_now,
+    scope_name: 'default'
+  )
+
+  @root_org.elements_under_default_root.create(
+    parent_id: @lv2_child_org.id,
+    child_id: @lv4_child_org.id,
+    distance: 2,
+    start_time: Time.now,
+    end_time: 1000.years.from_now,
+    scope_name: 'default'
+  )
+
+  @root_org.elements_under_default_root.create(
+    parent_id: @lv3_child_org.id,
+    child_id: @lv4_child_org.id,
+    distance: 1,
+    start_time: Time.now,
+    end_time: 1000.years.from_now,
+    scope_name: 'default'
+  )
+
+  @root_org.elements_under_default_root.create(
+    parent_id: @root_org.id,
+    child_id: @lv5_child_org.id,
+    distance: 5,
+    start_time: Time.now,
+    end_time: 1000.years.from_now,
+    scope_name: 'default'
+  )
+
+  @root_org.elements_under_default_root.create(
+    parent_id: @lv1_child_org.id,
+    child_id: @lv5_child_org.id,
+    distance: 4,
+    start_time: Time.now,
+    end_time: 1000.years.from_now,
+    scope_name: 'default'
+  )
+
+  @root_org.elements_under_default_root.create(
+    parent_id: @lv2_child_org.id,
+    child_id: @lv5_child_org.id,
+    distance: 3,
+    start_time: Time.now,
+    end_time: 1000.years.from_now,
+    scope_name: 'default'
+  )
+
+  @root_org.elements_under_default_root.create(
+    parent_id: @lv3_child_org.id,
+    child_id: @lv5_child_org.id,
+    distance: 2,
+    start_time: Time.now,
+    end_time: 1000.years.from_now,
+    scope_name: 'default'
+  )
+
+  @root_org.elements_under_default_root.create(
+    parent_id: @lv4_child_org.id,
+    child_id: @lv5_child_org.id,
+    distance: 1,
+    start_time: Time.now,
+    end_time: 1000.years.from_now,
+    scope_name: 'default'
+  )
+
+  @root_org.elements_under_default_root.create(
+    parent_id: @root_org.id,
+    child_id: @lv3_child_org2.id,
+    distance: 3,
+    start_time: Time.now,
+    end_time: 1000.years.from_now,
+    scope_name: 'default'
+  )
+
+  @root_org.elements_under_default_root.create(
+    parent_id: @lv1_child_org.id,
+    child_id: @lv3_child_org2.id,
+    distance: 2,
+    start_time: Time.now,
+    end_time: 1000.years.from_now,
+    scope_name: 'default'
+  )
+
+  @root_org.elements_under_default_root.create(
+    parent_id: @lv2_child_org2.id,
+    child_id: @lv3_child_org2.id,
+    distance: 1,
+    start_time: Time.now,
+    end_time: 1000.years.from_now,
+    scope_name: 'default'
+  )
+
+  @root_org.elements_under_default_root.create(
+    parent_id: @root_org.id,
+    child_id: @lv4_child_org2.id,
+    distance: 4,
+    start_time: Time.now,
+    end_time: 1000.years.from_now,
+    scope_name: 'default'
+  )
+
+  @root_org.elements_under_default_root.create(
+    parent_id: @lv1_child_org.id,
+    child_id: @lv4_child_org2.id,
+    distance: 3,
+    start_time: Time.now,
+    end_time: 1000.years.from_now,
+    scope_name: 'default'
+  )
+
+  @root_org.elements_under_default_root.create(
+    parent_id: @lv2_child_org2.id,
+    child_id: @lv4_child_org2.id,
+    distance: 2,
+    start_time: Time.now,
+    end_time: 1000.years.from_now,
+    scope_name: 'default'
+  )
+
+  @root_org.elements_under_default_root.create(
+    parent_id: @lv3_child_org2.id,
+    child_id: @lv4_child_org2.id,
+    distance: 1,
+    start_time: Time.now,
+    end_time: 1000.years.from_now,
+    scope_name: 'default'
+  )
+
+  @root_org.elements_under_default_root.create(
+    parent_id: @root_org.id,
+    child_id: @lv5_child_org2.id,
+    distance: 5,
+    start_time: Time.now,
+    end_time: 1000.years.from_now,
+    scope_name: 'default'
+  )
+
+  @root_org.elements_under_default_root.create(
+    parent_id: @lv1_child_org.id,
+    child_id: @lv5_child_org2.id,
+    distance: 4,
+    start_time: Time.now,
+    end_time: 1000.years.from_now,
+    scope_name: 'default'
+  )
+
+  @root_org.elements_under_default_root.create(
+    parent_id: @lv2_child_org2.id,
+    child_id: @lv5_child_org2.id,
+    distance: 3,
+    start_time: Time.now,
+    end_time: 1000.years.from_now,
+    scope_name: 'default'
+  )
+
+  @root_org.elements_under_default_root.create(
+    parent_id: @lv3_child_org2.id,
+    child_id: @lv5_child_org2.id,
+    distance: 2,
+    start_time: Time.now,
+    end_time: 1000.years.from_now,
+    scope_name: 'default'
+  )
+
+  @root_org.elements_under_default_root.create(
+    parent_id: @lv4_child_org2.id,
+    child_id: @lv5_child_org2.id,
     distance: 1,
     start_time: Time.now,
     end_time: 1000.years.from_now,
