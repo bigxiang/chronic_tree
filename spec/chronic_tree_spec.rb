@@ -60,6 +60,15 @@ describe ChronicTree do
       expect(@lv2_child_org.ancestors.second.id).to be == @root_org.id
       expect(@lv5_child_org.ancestors.size).to be == 5
     end
+
+    it "s: play with history versions" do
+      @root_org.as_tree(5.minutes.ago)
+
+      expect(@root_org.children.size).to be == 1
+      expect(@root_org.flat_descendants.size).to be == 2
+      expect(@root_org.children.first.children.first.id).to be == @lv1_child_org.id
+      expect(@root_org.children.first.children.first.parent.id).to be == @lv2_child_org.id
+    end
   end
 
   context "Tree Operation" do
@@ -168,8 +177,8 @@ describe ChronicTree do
 
         it "s: play with multiple scopes" do
           # operate with special scope
-          @root_org.as_tree('special').add_as_root.add_child(@lv1_child_org.as_tree('special'))
-          @lv1_child_org.add_child(@lv2_child_org4.as_tree('special'))
+          @root_org.as_tree('special').add_as_root.add_child(@lv1_child_org)
+          @lv1_child_org.add_child(@lv2_child_org4)
 
           # force refreshing the timestamp
           @root_org.as_tree('special')

@@ -67,10 +67,4 @@ module ChronicTree
 
     self
   end
-
-  private
-
-    def init_tree_args_when_nil(time_at, scope_name)
-      as_tree(time_at, scope_name) if current_time_at.nil? || current_scope_name.nil?
-    end
 end

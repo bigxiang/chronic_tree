@@ -43,6 +43,8 @@ class Org < ActiveRecord::Base
 end
 
 # Provide a tree with the hierarchy below:
+#
+# Now:
 #   root
 #     -- lv1
 #       -- lv2
@@ -56,6 +58,12 @@ end
 #     -- lv1-2
 #       -- lv2-3
 #       -- lv2-4
+#
+# 10 minutes ago:
+#
+#   root
+#     -- lv2
+#       -- lv1
 def init_simple_tree
   @root_org = Org.create(name: 'root')
   @lv1_child_org = Org.create(name: 'lv1')
@@ -71,21 +79,53 @@ def init_simple_tree
   @lv5_child_org = Org.create(name: 'lv5')
   @lv5_child_org2 = Org.create(name: 'lv5-2')
 
+  current_time = Time.now
+
   @root_org.elements_under_default_root.create(
     parent_id: @root_org.id,
     child_id: @root_org.id,
     distance: 0,
-    start_time: Time.now,
+    start_time: 10.minutes.ago(current_time),
     end_time: 1000.years.from_now,
+    scope_name: 'default'
+  )
+
+  # 10 minutes ago
+  @root_org.elements_under_default_root.create(
+    parent_id: @root_org.id,
+    child_id: @lv2_child_org.id,
+    distance: 1,
+    start_time: 10.minutes.ago(current_time),
+    end_time: current_time,
     scope_name: 'default'
   )
 
   @root_org.elements_under_default_root.create(
     parent_id: @root_org.id,
     child_id: @lv1_child_org.id,
+    distance: 2,
+    start_time: 10.minutes.ago(current_time),
+    end_time: current_time,
+    scope_name: 'default'
+  )
+
+  @root_org.elements_under_default_root.create(
+    parent_id: @lv2_child_org.id,
+    child_id: @lv1_child_org.id,
     distance: 1,
-    start_time: Time.now,
-    end_time: 1000.years.from_now,
+    start_time: 10.minutes.ago(current_time),
+    end_time: current_time,
+    scope_name: 'default'
+  )
+
+  # now
+
+  @root_org.elements_under_default_root.create(
+    parent_id: @root_org.id,
+    child_id: @lv1_child_org.id,
+    distance: 1,
+    start_time: current_time,
+    end_time: 1000.years.since(current_time),
     scope_name: 'default'
   )
 
@@ -93,8 +133,8 @@ def init_simple_tree
     parent_id: @root_org.id,
     child_id: @lv1_child_org2.id,
     distance: 1,
-    start_time: Time.now,
-    end_time: 1000.years.from_now,
+    start_time: current_time,
+    end_time: 1000.years.since(current_time),
     scope_name: 'default'
   )
 
@@ -102,8 +142,8 @@ def init_simple_tree
     parent_id: @root_org.id,
     child_id: @lv2_child_org.id,
     distance: 2,
-    start_time: Time.now,
-    end_time: 1000.years.from_now,
+    start_time: current_time,
+    end_time: 1000.years.since(current_time),
     scope_name: 'default'
   )
 
@@ -111,8 +151,8 @@ def init_simple_tree
     parent_id: @lv1_child_org.id,
     child_id: @lv2_child_org.id,
     distance: 1,
-    start_time: Time.now,
-    end_time: 1000.years.from_now,
+    start_time: current_time,
+    end_time: 1000.years.since(current_time),
     scope_name: 'default'
   )
 
@@ -120,8 +160,8 @@ def init_simple_tree
     parent_id: @root_org.id,
     child_id: @lv2_child_org2.id,
     distance: 2,
-    start_time: Time.now,
-    end_time: 1000.years.from_now,
+    start_time: current_time,
+    end_time: 1000.years.since(current_time),
     scope_name: 'default'
   )
 
@@ -129,8 +169,8 @@ def init_simple_tree
     parent_id: @lv1_child_org.id,
     child_id: @lv2_child_org2.id,
     distance: 1,
-    start_time: Time.now,
-    end_time: 1000.years.from_now,
+    start_time: current_time,
+    end_time: 1000.years.since(current_time),
     scope_name: 'default'
   )
 
@@ -138,8 +178,8 @@ def init_simple_tree
     parent_id: @root_org.id,
     child_id: @lv2_child_org3.id,
     distance: 2,
-    start_time: Time.now,
-    end_time: 1000.years.from_now,
+    start_time: current_time,
+    end_time: 1000.years.since(current_time),
     scope_name: 'default'
   )
 
@@ -147,8 +187,8 @@ def init_simple_tree
     parent_id: @lv1_child_org2.id,
     child_id: @lv2_child_org3.id,
     distance: 1,
-    start_time: Time.now,
-    end_time: 1000.years.from_now,
+    start_time: current_time,
+    end_time: 1000.years.since(current_time),
     scope_name: 'default'
   )
 
@@ -156,8 +196,8 @@ def init_simple_tree
     parent_id: @root_org.id,
     child_id: @lv2_child_org4.id,
     distance: 2,
-    start_time: Time.now,
-    end_time: 1000.years.from_now,
+    start_time: current_time,
+    end_time: 1000.years.since(current_time),
     scope_name: 'default'
   )
 
@@ -165,8 +205,8 @@ def init_simple_tree
     parent_id: @lv1_child_org2.id,
     child_id: @lv2_child_org4.id,
     distance: 1,
-    start_time: Time.now,
-    end_time: 1000.years.from_now,
+    start_time: current_time,
+    end_time: 1000.years.since(current_time),
     scope_name: 'default'
   )
 
@@ -174,8 +214,8 @@ def init_simple_tree
     parent_id: @root_org.id,
     child_id: @lv3_child_org.id,
     distance: 3,
-    start_time: Time.now,
-    end_time: 1000.years.from_now,
+    start_time: current_time,
+    end_time: 1000.years.since(current_time),
     scope_name: 'default'
   )
 
@@ -183,8 +223,8 @@ def init_simple_tree
     parent_id: @lv1_child_org.id,
     child_id: @lv3_child_org.id,
     distance: 2,
-    start_time: Time.now,
-    end_time: 1000.years.from_now,
+    start_time: current_time,
+    end_time: 1000.years.since(current_time),
     scope_name: 'default'
   )
 
@@ -192,8 +232,8 @@ def init_simple_tree
     parent_id: @lv2_child_org.id,
     child_id: @lv3_child_org.id,
     distance: 1,
-    start_time: Time.now,
-    end_time: 1000.years.from_now,
+    start_time: current_time,
+    end_time: 1000.years.since(current_time),
     scope_name: 'default'
   )
 
@@ -201,8 +241,8 @@ def init_simple_tree
     parent_id: @root_org.id,
     child_id: @lv4_child_org.id,
     distance: 4,
-    start_time: Time.now,
-    end_time: 1000.years.from_now,
+    start_time: current_time,
+    end_time: 1000.years.since(current_time),
     scope_name: 'default'
   )
 
@@ -210,8 +250,8 @@ def init_simple_tree
     parent_id: @lv1_child_org.id,
     child_id: @lv4_child_org.id,
     distance: 3,
-    start_time: Time.now,
-    end_time: 1000.years.from_now,
+    start_time: current_time,
+    end_time: 1000.years.since(current_time),
     scope_name: 'default'
   )
 
@@ -219,8 +259,8 @@ def init_simple_tree
     parent_id: @lv2_child_org.id,
     child_id: @lv4_child_org.id,
     distance: 2,
-    start_time: Time.now,
-    end_time: 1000.years.from_now,
+    start_time: current_time,
+    end_time: 1000.years.since(current_time),
     scope_name: 'default'
   )
 
@@ -228,8 +268,8 @@ def init_simple_tree
     parent_id: @lv3_child_org.id,
     child_id: @lv4_child_org.id,
     distance: 1,
-    start_time: Time.now,
-    end_time: 1000.years.from_now,
+    start_time: current_time,
+    end_time: 1000.years.since(current_time),
     scope_name: 'default'
   )
 
@@ -237,8 +277,8 @@ def init_simple_tree
     parent_id: @root_org.id,
     child_id: @lv5_child_org.id,
     distance: 5,
-    start_time: Time.now,
-    end_time: 1000.years.from_now,
+    start_time: current_time,
+    end_time: 1000.years.since(current_time),
     scope_name: 'default'
   )
 
@@ -246,8 +286,8 @@ def init_simple_tree
     parent_id: @lv1_child_org.id,
     child_id: @lv5_child_org.id,
     distance: 4,
-    start_time: Time.now,
-    end_time: 1000.years.from_now,
+    start_time: current_time,
+    end_time: 1000.years.since(current_time),
     scope_name: 'default'
   )
 
@@ -255,8 +295,8 @@ def init_simple_tree
     parent_id: @lv2_child_org.id,
     child_id: @lv5_child_org.id,
     distance: 3,
-    start_time: Time.now,
-    end_time: 1000.years.from_now,
+    start_time: current_time,
+    end_time: 1000.years.since(current_time),
     scope_name: 'default'
   )
 
@@ -264,8 +304,8 @@ def init_simple_tree
     parent_id: @lv3_child_org.id,
     child_id: @lv5_child_org.id,
     distance: 2,
-    start_time: Time.now,
-    end_time: 1000.years.from_now,
+    start_time: current_time,
+    end_time: 1000.years.since(current_time),
     scope_name: 'default'
   )
 
@@ -273,8 +313,8 @@ def init_simple_tree
     parent_id: @lv4_child_org.id,
     child_id: @lv5_child_org.id,
     distance: 1,
-    start_time: Time.now,
-    end_time: 1000.years.from_now,
+    start_time: current_time,
+    end_time: 1000.years.since(current_time),
     scope_name: 'default'
   )
 
@@ -282,8 +322,8 @@ def init_simple_tree
     parent_id: @root_org.id,
     child_id: @lv3_child_org2.id,
     distance: 3,
-    start_time: Time.now,
-    end_time: 1000.years.from_now,
+    start_time: current_time,
+    end_time: 1000.years.since(current_time),
     scope_name: 'default'
   )
 
@@ -291,8 +331,8 @@ def init_simple_tree
     parent_id: @lv1_child_org.id,
     child_id: @lv3_child_org2.id,
     distance: 2,
-    start_time: Time.now,
-    end_time: 1000.years.from_now,
+    start_time: current_time,
+    end_time: 1000.years.since(current_time),
     scope_name: 'default'
   )
 
@@ -300,8 +340,8 @@ def init_simple_tree
     parent_id: @lv2_child_org2.id,
     child_id: @lv3_child_org2.id,
     distance: 1,
-    start_time: Time.now,
-    end_time: 1000.years.from_now,
+    start_time: current_time,
+    end_time: 1000.years.since(current_time),
     scope_name: 'default'
   )
 
@@ -309,8 +349,8 @@ def init_simple_tree
     parent_id: @root_org.id,
     child_id: @lv4_child_org2.id,
     distance: 4,
-    start_time: Time.now,
-    end_time: 1000.years.from_now,
+    start_time: current_time,
+    end_time: 1000.years.since(current_time),
     scope_name: 'default'
   )
 
@@ -318,8 +358,8 @@ def init_simple_tree
     parent_id: @lv1_child_org.id,
     child_id: @lv4_child_org2.id,
     distance: 3,
-    start_time: Time.now,
-    end_time: 1000.years.from_now,
+    start_time: current_time,
+    end_time: 1000.years.since(current_time),
     scope_name: 'default'
   )
 
@@ -327,8 +367,8 @@ def init_simple_tree
     parent_id: @lv2_child_org2.id,
     child_id: @lv4_child_org2.id,
     distance: 2,
-    start_time: Time.now,
-    end_time: 1000.years.from_now,
+    start_time: current_time,
+    end_time: 1000.years.since(current_time),
     scope_name: 'default'
   )
 
@@ -336,8 +376,8 @@ def init_simple_tree
     parent_id: @lv3_child_org2.id,
     child_id: @lv4_child_org2.id,
     distance: 1,
-    start_time: Time.now,
-    end_time: 1000.years.from_now,
+    start_time: current_time,
+    end_time: 1000.years.since(current_time),
     scope_name: 'default'
   )
 
@@ -345,8 +385,8 @@ def init_simple_tree
     parent_id: @root_org.id,
     child_id: @lv5_child_org2.id,
     distance: 5,
-    start_time: Time.now,
-    end_time: 1000.years.from_now,
+    start_time: current_time,
+    end_time: 1000.years.since(current_time),
     scope_name: 'default'
   )
 
@@ -354,8 +394,8 @@ def init_simple_tree
     parent_id: @lv1_child_org.id,
     child_id: @lv5_child_org2.id,
     distance: 4,
-    start_time: Time.now,
-    end_time: 1000.years.from_now,
+    start_time: current_time,
+    end_time: 1000.years.since(current_time),
     scope_name: 'default'
   )
 
@@ -363,8 +403,8 @@ def init_simple_tree
     parent_id: @lv2_child_org2.id,
     child_id: @lv5_child_org2.id,
     distance: 3,
-    start_time: Time.now,
-    end_time: 1000.years.from_now,
+    start_time: current_time,
+    end_time: 1000.years.since(current_time),
     scope_name: 'default'
   )
 
@@ -372,8 +412,8 @@ def init_simple_tree
     parent_id: @lv3_child_org2.id,
     child_id: @lv5_child_org2.id,
     distance: 2,
-    start_time: Time.now,
-    end_time: 1000.years.from_now,
+    start_time: current_time,
+    end_time: 1000.years.since(current_time),
     scope_name: 'default'
   )
 
@@ -381,8 +421,8 @@ def init_simple_tree
     parent_id: @lv4_child_org2.id,
     child_id: @lv5_child_org2.id,
     distance: 1,
-    start_time: Time.now,
-    end_time: 1000.years.from_now,
+    start_time: current_time,
+    end_time: 1000.years.since(current_time),
     scope_name: 'default'
   )
 end
