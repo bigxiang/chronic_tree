@@ -8,8 +8,8 @@ Gem::Specification.new do |spec|
   spec.version       = ChronicTree::VERSION
   spec.authors       = ["bigxiang"]
   spec.email         = ["bigxiang@gmail.com"]
-  spec.description   = %q{Build a tree model with versions. You can retrieve the tree at any time.}
-  spec.summary       = %q{Build a tree model with versions. You can retrieve the tree at any time.}
+  spec.description   = %q{Build a tree with multiple versions and scopes by one model class.}
+  spec.summary       = %q{Build a tree with multiple versions and scopes by one model class.}
   spec.homepage      = ""
   spec.license       = "MIT"
 
