@@ -4,6 +4,7 @@
 /coverage/
 /spec/tmp
 **.orig
+/pkg/*
 
 ## Environment normalisation:
 /.bundle
