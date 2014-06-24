@@ -1,6 +1,7 @@
 # Chronic Tree
 
 [![Build Status](https://travis-ci.org/bigxiang/chronic_tree.svg?branch=master)](https://travis-ci.org/bigxiang/chronic_tree)
+[![Code Climate](https://codeclimate.com/github/bigxiang/chronic_tree.png)](https://codeclimate.com/github/bigxiang/chronic_tree)
 
 Build a tree with multiple versions and scopes by one model class.
 
