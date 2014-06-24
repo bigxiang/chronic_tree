@@ -81,7 +81,7 @@ module ChronicTree
 
         def add_new_elements
           if source.id == source_root_id
-            target.add_as_root(false)
+            ChronicTree::Command::AddRootElement.new(source).do
           else
             ChronicTree::Command::AddReplacedObjToOrigAncestors.new(
               source, source_root_id, source_ancestors, target).do
@@ -94,18 +94,12 @@ module ChronicTree
 
 
 
-    def add_as_root(validate = true)
+    def add_as_root
       as_tree(Time.now, current_scope_name || 'default')
 
-      raise_error_if_tree_is_not_empty if validate
+      raise_if_tree_is_not_empty
 
-      send("elements_under_#{current_scope_name}_root").create(
-        child: self,
-        parent: self,
-        distance: 0,
-        start_time: current_time_at,
-        end_time: 1000.years.since(current_time_at)
-      )
+      ChronicTree::Command::AddRootElement.new(self).do
 
       self
     end
@@ -113,9 +107,9 @@ module ChronicTree
     def add_child(object)
       as_tree(Time.now, current_scope_name || 'default') && object.as_tree(current_time_at, current_scope_name)
 
-      raise_error_if_object_unmatched(object)
-      raise_error_if_self_is_not_in_the_tree
-      raise_error_if_object_is_in_the_tree(object)
+      raise_if_object_unmatched(object)
+      raise_if_object_is_in_the_tree(object)
+      raise_if_self_is_not_in_the_tree
 
       ::ActiveRecord::Base.transaction do
         ChronicTree::Command::AddChildElement.new(self, object).do
@@ -128,7 +122,7 @@ module ChronicTree
     def remove_self
       as_tree(Time.now, current_scope_name || 'default')
 
-      raise_error_if_self_is_not_in_the_tree
+      raise_if_self_is_not_in_the_tree
 
       ::ActiveRecord::Base.transaction do
         ChronicTree::Command::RemoveSelfElement.new(self).do
@@ -141,7 +135,7 @@ module ChronicTree
     def remove_descendants
       as_tree(Time.now, current_scope_name || 'default')
 
-      raise_error_if_self_is_not_in_the_tree
+      raise_if_self_is_not_in_the_tree
 
       ::ActiveRecord::Base.transaction { ChronicTree::Command::RemoveDescendantElements.new(self).do }
 
@@ -152,13 +146,11 @@ module ChronicTree
       as_tree(Time.now, current_scope_name || 'default') && object.as_tree(current_time_at, current_scope_name)
       return self if self != root && parent == object
 
-      raise_error_if_object_unmatched(object)
-      raise_error_if_self_is_not_in_the_tree
-      raise "Object must be in the tree now." unless object.existed?(current_time_at, current_scope_name)
-      raise "Object can't be equal to self." if self == object
-      if descendants_relation(current_time_at, current_scope_name).where(child_id: object.id).any?
-        raise "Object can't be a child of self."
-      end
+      raise_if_object_unmatched(object)
+      raise_if_object_is_not_in_the_tree(object)
+      raise_if_object_equals_to_self(object)
+      raise_if_object_is_a_child_of_self(object)
+      raise_if_self_is_not_in_the_tree
 
       ChangeParent.new(self, object).act
     end
@@ -166,32 +158,55 @@ module ChronicTree
     def replace_by(object)
       as_tree(Time.now, current_scope_name || 'default') && object.as_tree(current_time_at, current_scope_name)
 
-      raise_error_if_object_unmatched(object)
-      raise_error_if_self_is_not_in_the_tree
-      raise_error_if_object_is_in_the_tree(object)
+      raise_if_object_unmatched(object)
+      raise_if_object_is_in_the_tree(object)
+      raise_if_self_is_not_in_the_tree
 
       ReplaceBy.new(self, object).act
     end
 
     private
 
-      def raise_error_if_object_unmatched(object)
-        raise "Object invalid. You can't add two types of objects " \
-          "in a tree." if object.class.name != self.class.name
+      def raise_if_object_unmatched(object)
+        if object.class.name != self.class.name
+          raise InvalidObjectError, "Object invalid. You can't add two types of objects in a tree."
+        end
 
-        raise "Object invalid. You must save it first." if object.new_record?
+        raise InvalidObjectError, "Object invalid. You must save it first." if object.new_record?
       end
 
-      def raise_error_if_object_is_in_the_tree(object)
-        raise "Object must not be in the tree now." if object.existed?(current_time_at, current_scope_name)
+      def raise_if_object_is_in_the_tree(object)
+        if object.existed_in_tree?(current_time_at, current_scope_name)
+          raise InvalidObjectError, "Object must not be in the tree now."
+        end
       end
 
-      def raise_error_if_self_is_not_in_the_tree
-        raise "Self must be in the tree now." unless existed?(current_time_at, current_scope_name)
+      def raise_if_object_is_not_in_the_tree(object)
+        unless object.existed_in_tree?(current_time_at, current_scope_name)
+          raise InvalidObjectError, "Object must be in the tree now."
+        end
       end
 
-      def raise_error_if_tree_is_not_empty
-        raise "Tree isn't empty, can't add root element." unless empty?(current_time_at, current_scope_name)
+      def raise_if_object_equals_to_self(object)
+        raise InvalidObjectError, "Object can't be equal to self." if self == object
+      end
+
+      def raise_if_object_is_a_child_of_self(object)
+        if descendants_relation(current_time_at, current_scope_name).where(child_id: object.id).any?
+          raise InvalidObjectError, "Object can't be a child of self."
+        end
+      end
+
+      def raise_if_self_is_not_in_the_tree
+        unless existed_in_tree?(current_time_at, current_scope_name)
+          raise Error, "Self must be in the tree now."
+        end
+      end
+
+      def raise_if_tree_is_not_empty
+        unless tree_empty?(current_time_at, current_scope_name)
+          raise Error, "Tree isn't empty, can't add root element."
+        end
       end
   end
 end

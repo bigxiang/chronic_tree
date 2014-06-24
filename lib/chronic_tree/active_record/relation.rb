@@ -10,8 +10,7 @@ module ChronicTree
       end
 
       def parent_relation(time_at, scope_name)
-        send("elements_as_#{scope_name}_child").
-          at(time_at).
+        existed_relation(time_at, scope_name).
           direct.
           exclude_root
       end
@@ -26,8 +25,7 @@ module ChronicTree
       end
 
       def ancestors_relation(time_at, scope_name)
-        send("elements_as_#{scope_name}_child").
-          at(time_at).
+        existed_relation(time_at, scope_name).
           includes(:parent).
           order(:distance)
       end

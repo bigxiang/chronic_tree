@@ -83,7 +83,7 @@ describe ChronicTree do
 
       it "s: add self as the root element" do
         root_org = @root_org.add_as_root
-        expect(root_org.empty?).to be_falsy
+        expect(root_org.tree_empty?).to be_falsy
         expect(root_org.children.size).to be == 0
         expect(root_org.parent?).to be_falsy
         expect(root_org.descendants.size).to be == 0
@@ -123,15 +123,15 @@ describe ChronicTree do
 
         it "s: remove self" do
           @lv1_child_org.remove_self
-          expect(@lv1_child_org.existed?).to be_falsy
-          expect(@lv2_child_org.existed?).to be_falsy
+          expect(@lv1_child_org.existed_in_tree?).to be_falsy
+          expect(@lv2_child_org.existed_in_tree?).to be_falsy
           expect(@root_org.flat_descendants.size).to be == 3
         end
 
         it "s: remove descendants" do
           @lv1_child_org.remove_descendants
-          expect(@lv1_child_org.existed?).to be_truthy
-          expect(@lv2_child_org.existed?).to be_falsy
+          expect(@lv1_child_org.existed_in_tree?).to be_truthy
+          expect(@lv2_child_org.existed_in_tree?).to be_falsy
           expect(@root_org.flat_descendants.size).to be == 4
         end
 
@@ -145,7 +145,7 @@ describe ChronicTree do
 
         it "s: replace root by another object" do
           @root_org.replace_by(@new_org)
-          expect(@root_org.existed?).to be_falsy
+          expect(@root_org.existed_in_tree?).to be_falsy
           expect(@lv1_child_org.parent.id).to be == @new_org.id
           expect(@new_org.parent?).to be_falsy
           expect(@new_org.children.size).to be == 2
@@ -154,7 +154,7 @@ describe ChronicTree do
 
         it "s: replace non-root by another object" do
           @lv1_child_org.replace_by(@new_org)
-          expect(@lv1_child_org.existed?).to be_falsy
+          expect(@lv1_child_org.existed_in_tree?).to be_falsy
           expect(@lv2_child_org.parent.id).to be == @new_org.id
           expect(@new_org.parent.id).to be == @root_org.id
           expect(@root_org.children.size).to be == 2

@@ -1,6 +1,24 @@
 module ChronicTree
   module Command
 
+    class AddRootElement
+      attr_reader :source
+
+      def initialize(source)
+        @source = source
+      end
+
+      def do
+        source.send("elements_under_#{source.current_scope_name}_root").create(
+          child: source,
+          parent: source,
+          distance: 0,
+          start_time: source.current_time_at,
+          end_time: 1000.years.since(source.current_time_at)
+        )
+      end
+    end
+
     class AddChildElement
       attr_reader :source, :child_id, :distance, :source_root_id
 

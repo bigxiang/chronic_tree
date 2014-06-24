@@ -1,11 +1,15 @@
 # Chronic Tree
 
+[![GitHub version](https://badge.fury.io/gh/bigxiang%2Fchronic_tree.svg)](http://badge.fury.io/gh/bigxiang%2Fchronic_tree)
 [![Build Status](https://travis-ci.org/bigxiang/chronic_tree.svg?branch=master)](https://travis-ci.org/bigxiang/chronic_tree)
 [![Code Climate](https://codeclimate.com/github/bigxiang/chronic_tree.png)](https://codeclimate.com/github/bigxiang/chronic_tree)
+[![Coverage Status](https://coveralls.io/repos/bigxiang/chronic_tree/badge.png)](https://coveralls.io/r/bigxiang/chronic_tree)
 
-Build a tree with multiple versions and scopes by one model class.
+Build a tree with historical versions and multiple scopes by one model class.
 
-In some applications, we need to build multiple trees using one model. Traditional solutions can't fulfill this requirement. For example, organization tree in an ERP or CRM application. We usually need multiple organizaiton trees in these apps and track the history of an organization tree.
+There are some gems for tree structures, for example: [acts_as_tree](https://github.com/amerine/acts_as_tree). They are simple and easy to use.
+
+But in some applications, we are facing more complicated cases. We probably need to build multiple trees using one model and track their histories. For example, organization tree in an ERP or CRM application. Multiple organization trees in these apps usually are created and tracked. So we can’t solve this problem only by using a ‘parent_id’. It’s why this gem has been created.
 
 This gem is compatible with Ruby 2.0+ and Rails 4.0+.
 
@@ -19,11 +23,11 @@ And then execute:
 
     $ bundle
 
-Execute installation script:
+Execute the installation script:
 
     $ rails g chronic_tree:install
 
-Execute rake command:
+Execute the rake command:
 
     $ rake db:migrate
 
@@ -31,31 +35,35 @@ Execute rake command:
 
 Add a tree to your model:
 
-    class Org < ActiveRecord::Base
-      chronic_tree
-    end
+```ruby
+class Org < ActiveRecord::Base
+  chronic_tree
+end
+```
 
-Before travelling in the tree, using `as_tree` to initialize the tree arguments is highly recommended however the methods below would call `as_tree` implicitly if the arguments aren't be set. It's somewhat dup, I am trying to simplify it, but it's the safest way to get the correct version of the tree now.
+Before travelling in the tree, using `as_tree` to initialize the tree arguments is highly recommended however the methods below would call `as_tree` implicitly if the arguments aren't set. It's somewhat dup, I am trying to simplify it, but it's the safest way to get the correct version of the tree now.
 
-    # init a tree with current timestamp and default scope
-    @org.as_tree
+```ruby
+# init a tree with current timestamp and default scope
+@org.as_tree
 
-    # init a tree with the timestamp at 10 minutes ago and default scope
-    @org.as_tree(10.minutes.ago)
+# init a tree with the timestamp at 10 minutes ago and default scope
+@org.as_tree(10.minutes.ago)
 
-    # init a tree with the timestamp at 10 minutes ago and special scope
-    @org.as_tree(10.minutes.ago, 'special')
+# init a tree with the timestamp at 10 minutes ago and special scope
+@org.as_tree(10.minutes.ago, 'special')
+```
 
 ####Add root
 
-This method would create a root node for an empty tree.
+This method creates a root node for an empty tree.
 ```ruby
 @org.add_as_root
 ```
 
 ####Add children
 
-This method would add a child object under itself.
+This method adds a child object under itself.
 
 Create this structure:
 ```ruby
@@ -70,7 +78,7 @@ Create this structure:
 
 ####Change parent
 
-You can change the parent node with another node existed in the tree.
+You can change the parent node with another node existing in the tree.
 ```ruby
 @org.as_tree.parent # => @parent
 @org.change_parent(@another_parent)
@@ -79,21 +87,21 @@ You can change the parent node with another node existed in the tree.
 
 ####Remove descendants
 
-It would destroy all descendant nodes.
+It destroys all descendant nodes.
 ```ruby
 @org.remove_descendants
 ```
 
 ####Remove self
 
-It would destroy self node and its descendant nodes.
+It destroys self node and its descendant nodes.
 ```ruby
 @org.remove_self
 ```
 
 ####Replace self by another object
 
-It would be replaced by another object. This behavior doesn't effect other tree nodes.
+It’s replaced by another object. This behavior doesn't affect other tree nodes.
 ```ruby
 # before replacing
 # org
@@ -112,18 +120,22 @@ It would be replaced by another object. This behavior doesn't effect other tree 
 
 Get all direct child objects of itself.
 ```ruby
-@org.as_tree.children.each do |org|
-  # actions.....
-  # each org has called as_tree automatically
-  # so you can use tree travesal directly
+@org.as_tree.children.each do |child_org|
+  # actions...
+  # each child org has called as_tree automatically
+  # so you can use tree traversal directly
 
-  org.children.size # => the size of children of the org
+  ...
+  child_org.children
+  child_org.parent
+  child_org.root
+  ...
 end
 ```
 
 ####Get parent
 
-Get parent object of iteself, return nil if parent doesn't exist.
+Get parent object, return nil if the parent doesn't exist.
 ```ruby
 @org.as_tree.parent  # => @parent_org
 @org.as_tree.parent  # => nil if parent doesn't exist
@@ -132,7 +144,7 @@ Get parent object of iteself, return nil if parent doesn't exist.
 
 ####Get root
 
-Get root object of itself, return nil if parent doesn't exist.
+Get root object, return nil if the parent doesn't exist.
 ```ruby
 @org.as_tree.root  # => @root_org
 @org.as_tree.root  # => nil if the tree is empty
@@ -140,19 +152,19 @@ Get root object of itself, return nil if parent doesn't exist.
 
 ####Get ancestors
 
-It would return a list of all parent object of itself and order by distance to it.
+It returns a list of all parent objects of itself and order by distance to it.
 ```ruby
 @org.as_tree.ancestors # => [<parent_org>, <root_org>]
 ```
 
 ####Get descendants
 
-It would return a list of each level descendants of itself and order by distance to it. Each level is an array too and contains each object of this level.
+It returns a list of levels. Each level is an array too and contains all objects of this level.
 ```ruby
 @org.as_tree.descendants # => [[<first_level_children>], [<second_level_children>], ...]
 ```
 
-It would return all descendants as a flat array at once.
+It returns all descendants as a flat array at once.
 ```ruby
 @org.as_tree.flat_descendants # => [<all_descendants>]
 ```
@@ -160,29 +172,100 @@ It would return all descendants as a flat array at once.
 ####Utils
 
 ```ruby
-@org.empty?     # => Return if the tree is empty.
-@org.empty?(10.minustes.ago, 'special')
-@org.existed?   # => Return if current node exists in the tree.
-@org.existed?(10.minustes.ago, 'special')
+@org.tree_empty?     # => Return true if the tree is empty.
+@org.tree_empty?(10.minutes.ago, 'special')
+@org.existed_in_tree?   # => Return true if @org exists in the tree.
+@org.existed_in_tree?(10.minutes.ago, 'special')
 ```
 These two methods wouldn't call `as_tree`.
 
 ## Advanced
 
-The document is being written... You can read the specs first.
+The most important part of this gem is playing with historical versions and multiple scopes in one tree.
 
 ####Play with history
 
-TODO...
+If you had a tree 1 day ago:
+
+```
+root
+  -- child1
+    -- child1.1
+  -- child2
+    -- child2.1
+```
+
+And change to this version now:
+
+```
+root
+  -- child1
+  -- child2
+    -- child2.1
+      -- child2.1.1
+```
+
+You can easily get the correct version of the tree at any time.
+
+```ruby
+root.as_tree.children # => [child1, child2]
+child1.as_tree.children # => []
+child2.as_tree.flat_descendants # =? [child2.1, child2.1.1]
+
+root.as_tree(1.days.ago).children # => [child1, child2]
+child1.as_tree(1.days.ago).children # => [child1.1]
+child2.as_tree(1.days.ago).flat_descendants # =? [child2.1]
+```
 
 ####Play with multiple scopes
 
-TODO...
+If you have two scopes in one tree at the same time:
+
+```
+default scope:
+root
+  -- child1
+  -- child2
+    -- child2.1
+
+special scope:
+another_root
+  -- child2
+    -- child2.1
+    -- child2.2
+  -- child3
+```
+
+You can switch between two scopes:
+
+```ruby
+child2.as_tree.parent # => root
+child2.as_tree.children # => [child2.1]
+
+child2.as_tree('special').parent # => another_root
+child2.as_tree('special').children # => [child2.1, child2.2]
+```
+
 
 ####Using low-level relations
 
-TODO...
+They usually don't need to be used. All tree traversal methods are based on these relations, they just return ActiveRecord::Relation for chronic_tree_elements table, so you can chain the method as you want.
 
+You must pass timestamp and scope name explicitly in these relations.
+
+```ruby
+# Return children elements
+root.children_relation(Time.now, 'default')
+
+# Return parent elements
+root.parent_relation(Time.now, 'default')
+
+# Return descendant elements
+root.descendants_relation(Time.now, 'default')
+
+# Return ancestor elements
+root.ancestors_relation(Time.now, 'default')
+```
 
 ## Contributing
 

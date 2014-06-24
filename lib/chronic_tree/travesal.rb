@@ -44,20 +44,16 @@ module ChronicTree
 
     alias_method :parent?, :parent
 
-    def empty?(time_at = Time.now, scope_name = 'default')
+    def tree_empty?(time_at = Time.now, scope_name = 'default')
       ChronicTree::ActiveRecord::Element.
         where(scope_name: scope_name).
         at(time_at).
         empty?
     end
 
-    alias_method :tree_empty?, :empty?
-
-    def existed?(time_at = Time.now, scope_name = 'default')
+    def existed_in_tree?(time_at = Time.now, scope_name = 'default')
       existed_relation(time_at, scope_name).any?
     end
-
-    alias_method :existed_in_tree?, :existed?
 
     private
 

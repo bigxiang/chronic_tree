@@ -8,6 +8,9 @@ require "set"
 module ChronicTree
   require 'chronic_tree/railtie' if defined?(Rails)
 
+  class Error < RuntimeError; end
+  class InvalidObjectError < Error; end
+
   include ChronicTree::ActiveRecord::Relation
   include ChronicTree::Travesal
   include ChronicTree::Operation

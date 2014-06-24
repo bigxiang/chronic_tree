@@ -24,6 +24,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "sqlite3"
   spec.add_development_dependency "pry"
   spec.add_development_dependency "codeclimate-test-reporter"
+  spec.add_development_dependency "coveralls"
 
   spec.add_dependency "activerecord", ">= 4.0.0"
 end
