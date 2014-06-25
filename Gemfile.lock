@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    chronic_tree (1.0.0)
+    chronic_tree (1.0.1)
       activerecord (>= 4.0.0)
 
 GEM
